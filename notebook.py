@@ -11,18 +11,20 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, Gradien
 train= pd.read_excel('model/train.xlsx')
 val= pd.read_excel('model/test.xlsx')
 
-#Filling Missing Values
+#Dropping and Filling Missing Values
 train.drop(['id','gender', 'type_of_residence', 'address'], 1, inplace=True)
 val.drop(['id','gender', 'type_of_residence', 'address'], 1, inplace=True)
 
+#Interest Rate Column
 train.loc[train.interest_rate.isna(), 'interest_rate'] = (train.interest_due * 100) / train.loan_amount
 
+#Bank Column
 train.loc[train.bank.isna(), 'bank'] = 'Access Bank'
 val.loc[val.bank.isna(), 'bank'] = 'Access Bank'
 
+#Card Expiry Column
 train.loc[train.card_expiry.isna(), 'card_expiry'] = 32023.0
 val.loc[val.card_expiry.isna(), 'card_expiry'] = 32023.0
-
 
 train['card_expiry_month'] = train.card_expiry.map(lambda x: str(int(x))[:-4]).astype(int)
 train['card_expiry_year'] = train.card_expiry.map(lambda x: str(int(x))[-4:]).astype(int)
@@ -33,6 +35,7 @@ val['card_expiry_year'] = val.card_expiry.map(lambda x: str(int(x))[-4:]).astype
 val.drop('card_expiry', 1, inplace=True)
 
 
+#Date of Birth, Work Start Date Column
 date_column= ['date_of_birth', 'work_start_date']
 def extract_date(train,cols,):
     for x in cols:
@@ -47,6 +50,7 @@ def extract_data(val,cols,):
 extract_data(val,date_column)
 
 
+# First Account, Last Account Column
 acc_column= ['first_account', 'last_account']
 def extract(train,col,):
     for x in col:
@@ -66,49 +70,51 @@ def extract_val(val,col,):
     val.drop(columns=acc_column,axis=1,inplace=True)
 extract_val(val, acc_column)
 
-
+# Tenor Column
 train['tenor'] = train['tenor'].replace(['4 weeks', '3 weeks', '1 months'], ['28 days', '21 days', '30 days'])
 train['tenor'] = train.tenor.map(lambda x: x.split(' ')[0]).astype(int)
-
 
 val['tenor'] = val['tenor'].replace(['4 weeks', '3 weeks', '1 months'], ['28 days', '21 days', '30 days'])
 val['tenor'] = val.tenor.map(lambda x: x.split(' ')[0]).astype(int)
 
+#Proposed Payday Column
 train.proposed_payday = train.proposed_payday.replace(['4 weeks', '3 weeks', '1 months', '2 months', '4 months'], ['28 days', '21 days', '30 days','60 days', '120 days' ])
 train.proposed_payday = train.proposed_payday.map(lambda x: x.split(' ')[0]).astype(int)
 
 val.proposed_payday = val.proposed_payday.replace(['4 weeks', '3 weeks', '1 months', '2 months', '4 months'], ['28 days', '21 days', '30 days','60 days', '120 days' ])
 val.proposed_payday = val.proposed_payday.map(lambda x: x.split(' ')[0]).astype(int)
 
+#Work Start Date Column
 train.loc[train.work_start_date_year.isna(), 'work_start_date_year'] = 2018.0
 
-
+#Mapping Target Variable
 target_map = {
 	'SETTLED': 2,
     'PAST DUE': 5}
 train.status.replace(target_map, inplace = True)
 
+# Categorical Data Conversion to Numerical
 col= ['card_network', 'bank', 'tier', 'selfie_id_check', 'marital_status', 'no_of_dependent', 'educational_attainment', 'employment_status', 'sector_of_employment', 'monthly_net_income', 'purpose', 'location']
-
 for y in col:
   le= LabelEncoder()
   train[y]= le.fit_transform(train[y].astype(str))
-
-for y in col:
-  le= LabelEncoder()
   val[y]= le.fit_transform(val[y].astype(str))
+  
 
+#Data Modeling
 y= train['status']
 X= train.drop('status', axis= 1)
 
+#Data Splitting
 train_x, val_x, train_y, val_y = train_test_split(X.values, y.values, test_size=0.2, random_state=99)
-
 gbc_model= GradientBoostingClassifier(learning_rate= 0.1, n_estimators= 200, max_depth= 2, min_samples_split=7)
 gbc_model.fit(train_x, train_y)
 
+#Prediction stage
 pred_y = gbc_model.predict(val_x)
 print(classification_report(val_y, pred_y))
 
+#Save Model
 import pickle
 pickle.dump(gbc_model, open("lendsqrdatapredmode.pkl", "wb"))
 
