@@ -1,0 +1,6 @@
+2021-02-21 16:29:44 : WARNING : flaskapp : Be Careful, This is a warning
+2021-02-21 16:29:44 : ERROR : flaskapp : This is an error log
+2021-02-21 16:29:44 : CRITICAL : flaskapp : Fatal, a critical message
+2021-02-21 16:29:54 : WARNING : flaskapp : Be Careful, This is a warning
+2021-02-21 16:29:54 : ERROR : flaskapp : This is an error log
+2021-02-21 16:29:54 : CRITICAL : flaskapp : Fatal, a critical message
