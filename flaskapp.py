@@ -11,30 +11,6 @@ import json
 
 
 app = Flask(__name__)
-#logger= logging.getLogger(__name__)
-
-#-------Issue lies in log records working on localhost but not generated after deployment----
-#-------------------------------------To be fixed-------------------------------
-
-#ch= logging.StreamHandler()
-#fh= logging.FileHandler('lsq-ml-pk-logger.log')
-#ch.setLevel(logging.DEBUG)
-#fh.setLevel(logging.DEBUG)
-
-#c_format= logging.Formatter('%(levelname)s : %(name)s : %(message)s')
-#f_format= logging.Formatter('%(asctime)s : %(levelname)s : %(name)s : %(message)s',  datefmt='%Y-%m-%d %H:%M:%S')
-#ch.setFormatter(c_format)
-#fh.setFormatter(f_format)
-
-#app.logger.addHandler(ch)
-#app.logger.addHandler(fh)
-
-
-#app.logger.debug('This is a DEBUG message')
-#app.logger.info('This is an INFO message')
-#app.logger.warning('Be Careful, This is a warning')
-#app.logger.error('This is an error log')
-#app.logger.critical('Fatal, a critical message')
 
 
 
@@ -711,7 +687,7 @@ def Prediction():
 					data['monthly_net_income']= le.fit_transform(data['monthly_net_income'])
 				elif data['monthly_net_income'].values == "700,000-999,999":
 					data['monthly_net_income']= le.fit_transform(data['monthly_net_income'])
-				elif data['monthly_net_income'].values == "Above 1,000,000":
+				elif data['monthly_net_income'].values == "Above1,000,000":
 					data['monthly_net_income']= le.fit_transform(data['monthly_net_income'])
 				elif data['monthly_net_income'].values == "10,000 - 55,000":
 					data['monthly_net_income']= le.fit_transform(data['monthly_net_income'])
